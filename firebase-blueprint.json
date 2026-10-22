@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "QA Project workspace containing test suites and test runs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "ownerId", "createdAt", "updatedAt"]
+    },
+    "TestCase": {
+      "title": "TestCase",
+      "description": "Standardized QA test case specification with steps and expected results",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 300 },
+        "suite": { "type": "string", "maxLength": 100 },
+        "type": { "type": "string", "maxLength": 50 },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "status": { "type": "string", "enum": ["draft", "active", "deprecated"] },
+        "preconditions": { "type": "string", "maxLength": 2000 },
+        "steps": { "type": "string", "maxLength": 5000 },
+        "expectedResult": { "type": "string", "maxLength": 3000 },
+        "automated": { "type": "boolean" },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "projectId", "title", "suite", "priority", "status", "steps", "expectedResult", "ownerId", "createdAt", "updatedAt"]
+    },
+    "TestRun": {
+      "title": "TestRun",
+      "description": "A test execution cycle across environments with aggregated metrics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 300 },
+        "environment": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["in_progress", "completed"] },
+        "total": { "type": "number" },
+        "passed": { "type": "number" },
+        "failed": { "type": "number" },
+        "blocked": { "type": "number" },
+        "skipped": { "type": "number" },
+        "executedBy": { "type": "string", "maxLength": 128 },
+        "durationSeconds": { "type": "number" },
+        "formattedDuration": { "type": "string", "maxLength": 50 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "projectId", "title", "environment", "status", "ownerId", "createdAt", "updatedAt"]
+    },
+    "Bug": {
+      "title": "Bug",
+      "description": "Software defect or anomaly logged during manual or automated QA execution",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 300 },
+        "description": { "type": "string", "maxLength": 4000 },
+        "stepsToReproduce": { "type": "string", "maxLength": 4000 },
+        "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "priority": { "type": "string", "enum": ["P0", "P1", "P2", "P3"] },
+        "status": { "type": "string", "enum": ["open", "in_progress", "resolved", "closed"] },
+        "environment": { "type": "string", "maxLength": 100 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "projectId", "title", "severity", "priority", "status", "ownerId", "createdAt", "updatedAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Multi-turn Gemini chat interaction history for QA engineering copilot",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["user", "model"] },
+        "text": { "type": "string", "maxLength": 20000 },
+        "qaRole": { "type": "string", "maxLength": 100 },
+        "modelName": { "type": "string", "maxLength": 100 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "role", "text", "ownerId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Collection of QA projects owned by authenticated users"
+    },
+    "/testCases/{testCaseId}": {
+      "schema": "TestCase",
+      "description": "Repository of QA test cases"
+    },
+    "/testRuns/{testRunId}": {
+      "schema": "TestRun",
+      "description": "Collection of executed test runs"
+    },
+    "/bugs/{bugId}": {
+      "schema": "Bug",
+      "description": "Collection of logged defects and QA issues"
+    },
+    "/chatMessages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Saved conversational QA copilot interactions"
+    }
+  }
+}

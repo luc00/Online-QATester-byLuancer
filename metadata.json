@@ -1,0 +1,6 @@
+{
+  "name": "QA Nexus - Online QA Tester",
+  "description": "Comprehensive QA testing platform with AI test generation, visual bug analysis, video triage, Google Sheets & Tasks sync, and persistent test run management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

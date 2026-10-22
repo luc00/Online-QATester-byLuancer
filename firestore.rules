@@ -1,0 +1,142 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isOwner(ownerId) {
+      return isSignedIn() && request.auth.uid == ownerId;
+    }
+
+    // Projects collection
+    match /projects/{projectId} {
+      function isValidProject(data) {
+        return data.keys().hasAll(['id', 'name', 'ownerId', 'createdAt', 'updatedAt']) &&
+               data.id is string && data.id.size() <= 128 &&
+               data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+               data.ownerId == request.auth.uid &&
+               (!('description' in data) || (data.description is string && data.description.size() <= 2000));
+      }
+
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(projectId) && isValidProject(incoming());
+      allow update: if isSignedIn() && isValidId(projectId) &&
+                       existing().ownerId == request.auth.uid &&
+                       incoming().ownerId == existing().ownerId &&
+                       isValidProject(incoming());
+      allow delete: if isSignedIn() && isValidId(projectId) && existing().ownerId == request.auth.uid;
+    }
+
+    // Test cases collection
+    match /testCases/{testCaseId} {
+      function isValidTestCase(data) {
+        return data.keys().hasAll(['id', 'projectId', 'title', 'suite', 'priority', 'status', 'steps', 'expectedResult', 'ownerId', 'createdAt', 'updatedAt']) &&
+               data.id is string && data.id.size() <= 128 &&
+               data.projectId is string && data.projectId.size() <= 128 &&
+               data.title is string && data.title.size() > 0 && data.title.size() <= 300 &&
+               data.suite is string && data.suite.size() <= 100 &&
+               data.priority in ['low', 'medium', 'high', 'critical'] &&
+               data.status in ['draft', 'active', 'deprecated'] &&
+               data.steps is string && data.steps.size() <= 5000 &&
+               data.expectedResult is string && data.expectedResult.size() <= 3000 &&
+               data.ownerId == request.auth.uid;
+      }
+
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(testCaseId) && isValidTestCase(incoming());
+      allow update: if isSignedIn() && isValidId(testCaseId) &&
+                       existing().ownerId == request.auth.uid &&
+                       incoming().ownerId == existing().ownerId &&
+                       isValidTestCase(incoming());
+      allow delete: if isSignedIn() && isValidId(testCaseId) && existing().ownerId == request.auth.uid;
+    }
+
+    // Test runs collection
+    match /testRuns/{testRunId} {
+      function isValidTestRun(data) {
+        return data.keys().hasAll(['id', 'projectId', 'title', 'environment', 'status', 'ownerId', 'createdAt', 'updatedAt']) &&
+               data.id is string && data.id.size() <= 128 &&
+               data.projectId is string && data.projectId.size() <= 128 &&
+               data.title is string && data.title.size() > 0 && data.title.size() <= 300 &&
+               data.environment is string && data.environment.size() <= 50 &&
+               data.status in ['in_progress', 'completed'] &&
+               (!('durationSeconds' in data) || data.durationSeconds is number) &&
+               (!('formattedDuration' in data) || (data.formattedDuration is string && data.formattedDuration.size() <= 50)) &&
+               data.ownerId == request.auth.uid;
+      }
+
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(testRunId) && isValidTestRun(incoming());
+      allow update: if isSignedIn() && isValidId(testRunId) &&
+                       existing().ownerId == request.auth.uid &&
+                       incoming().ownerId == existing().ownerId &&
+                       isValidTestRun(incoming());
+      allow delete: if isSignedIn() && isValidId(testRunId) && existing().ownerId == request.auth.uid;
+    }
+
+    // Bugs collection
+    match /bugs/{bugId} {
+      function isValidBug(data) {
+        return data.keys().hasAll(['id', 'projectId', 'title', 'severity', 'priority', 'status', 'ownerId', 'createdAt', 'updatedAt']) &&
+               data.id is string && data.id.size() <= 128 &&
+               data.projectId is string && data.projectId.size() <= 128 &&
+               data.title is string && data.title.size() > 0 && data.title.size() <= 300 &&
+               data.severity in ['low', 'medium', 'high', 'critical'] &&
+               data.priority in ['P0', 'P1', 'P2', 'P3'] &&
+               data.status in ['open', 'in_progress', 'resolved', 'closed'] &&
+               data.ownerId == request.auth.uid;
+      }
+
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(bugId) && isValidBug(incoming());
+      allow update: if isSignedIn() && isValidId(bugId) &&
+                       existing().ownerId == request.auth.uid &&
+                       incoming().ownerId == existing().ownerId &&
+                       isValidBug(incoming());
+      allow delete: if isSignedIn() && isValidId(bugId) && existing().ownerId == request.auth.uid;
+    }
+
+    // Chat messages collection
+    match /chatMessages/{messageId} {
+      function isValidChatMessage(data) {
+        return data.keys().hasAll(['id', 'role', 'text', 'ownerId', 'createdAt']) &&
+               data.id is string && data.id.size() <= 128 &&
+               data.role in ['user', 'model'] &&
+               data.text is string && data.text.size() <= 20000 &&
+               data.ownerId == request.auth.uid;
+      }
+
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(messageId) && isValidChatMessage(incoming());
+      allow update: if isSignedIn() && isValidId(messageId) &&
+                       existing().ownerId == request.auth.uid &&
+                       incoming().ownerId == existing().ownerId &&
+                       isValidChatMessage(incoming());
+      allow delete: if isSignedIn() && isValidId(messageId) && existing().ownerId == request.auth.uid;
+    }
+  }
+}
