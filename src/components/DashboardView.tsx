@@ -17,6 +17,7 @@ import {
   Search,
   ShieldCheck,
   Download,
+  ExternalLink,
 } from 'lucide-react';
 import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
 import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
@@ -57,6 +58,38 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-6 text-zinc-900">
+      {/* Luancer & Co. Banner Assistenza Diretta */}
+      <div className="bg-zinc-900 text-white rounded-2xl p-4 sm:p-5 border border-zinc-800 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="relative w-11 h-11 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0 flex items-center justify-center">
+            <img
+              src={`${import.meta.env.BASE_URL}assets/aistudio/logo_LUANCER_d035bfad.PNG`}
+              alt="LUANCER & CO."
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">
+              LUANCER & CO. • ASSISTENZA DIRETTA
+            </span>
+            <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5">
+              <span>Passa da me su luancerco.it</span>
+              <span className="text-amber-400">⚡</span>
+            </h2>
+          </div>
+        </div>
+
+        <a
+          href="https://luancerco.it/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full sm:w-auto px-4 py-2 bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+        >
+          <span>Visita luancerco.it</span>
+          <ExternalLink className="w-3.5 h-3.5 text-zinc-600" />
+        </a>
+      </div>
+
       {/* Top Welcome Banner - White & Minimalist */}
       <div className="relative overflow-hidden rounded-2xl bg-white border border-zinc-200 p-6 md:p-8 shadow-xs">
         <div className="relative z-10 max-w-3xl">
