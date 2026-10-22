@@ -22,6 +22,7 @@ import {
 import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
 import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 import { DashboardWidget } from './DashboardWidget.tsx';
+import luancerLogo from '/assets/aistudio/logo_LUANCER_square.png';
 
 interface DashboardViewProps {
   currentProject: Project | null;
@@ -63,7 +64,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-3.5">
           <div className="relative w-11 h-11 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0 flex items-center justify-center">
             <img
-              src={`${import.meta.env.BASE_URL}assets/aistudio/logo_LUANCER_d035bfad.PNG`}
+              src={luancerLogo}
               alt="LUANCER & CO."
               className="w-full h-full object-cover"
             />
@@ -464,7 +465,5 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
     </div>
-  );
-};
   );
 };
