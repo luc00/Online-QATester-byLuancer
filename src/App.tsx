@@ -34,7 +34,8 @@ import {
   initialTestRuns,
   initialBugs,
 } from './lib/mockData.ts';
-import { Project, TestCase, TestRun, Bug, ChatMessage } from './types/qa.ts';
+import { TestCase, TestRun, Bug, ChatMessage, Project } from './types/qa.ts';
+import { exportTestCasesToCsv, exportBugsToCsv } from './lib/exportUtils.ts';
 
 import { Navbar } from './components/Navbar.tsx';
 import { ConfirmationModal } from './components/ConfirmationModal.tsx';
@@ -49,6 +50,13 @@ import { TestRunModal } from './components/TestRunModal.tsx';
 import { WebsiteAuditorView } from './components/WebsiteAuditorView.tsx';
 import { ExternalLink, CheckCircle2, AlertCircle, X, Wrench, Sparkles, ArrowRight } from 'lucide-react';
 
+const STORAGE_KEYS = {
+  PROJECTS: 'qa_local_projects_v1',
+  TEST_CASES: 'qa_local_test_cases_v1',
+  TEST_RUNS: 'qa_local_test_runs_v1',
+  BUGS: 'qa_local_bugs_v1',
+};
+
 export default function App() {
   // Navigation
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -58,12 +66,43 @@ export default function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [hasWorkspaceAuth, setHasWorkspaceAuth] = useState(false);
 
-  // QA Core Entities
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>(initialProjects[0]?.id || '');
-  const [testCases, setTestCases] = useState<TestCase[]>(initialTestCases);
-  const [testRuns, setTestRuns] = useState<TestRun[]>(initialTestRuns);
-  const [bugs, setBugs] = useState<Bug[]>(initialBugs);
+  // QA Core Entities - Initialized with LocalStorage fallback to enable full functionality for all clients
+  const [projects, setProjects] = useState<Project[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.PROJECTS);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return initialProjects;
+  });
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(
+    () => projects[0]?.id || initialProjects[0]?.id || ''
+  );
+
+  const [testCases, setTestCases] = useState<TestCase[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.TEST_CASES);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return initialTestCases;
+  });
+
+  const [testRuns, setTestRuns] = useState<TestRun[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.TEST_RUNS);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return initialTestRuns;
+  });
+
+  const [bugs, setBugs] = useState<Bug[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.BUGS);
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return initialBugs;
+  });
+
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   // Modal / Execution States
@@ -275,10 +314,26 @@ export default function App() {
     }
   };
 
-  // Workspace: Export Test Cases to Google Sheets
+  // 1b. Automatically save state to LocalStorage for all clients without requiring an account
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(projects));
+      localStorage.setItem(STORAGE_KEYS.TEST_CASES, JSON.stringify(testCases));
+      localStorage.setItem(STORAGE_KEYS.TEST_RUNS, JSON.stringify(testRuns));
+      localStorage.setItem(STORAGE_KEYS.BUGS, JSON.stringify(bugs));
+    } catch (e) {
+      console.warn('LocalStorage save failed:', e);
+    }
+  }, [projects, testCases, testRuns, bugs]);
+
+  // Workspace: Export Test Cases to Google Sheets or direct CSV for all clients
   const handleExportTestCasesToSheets = async (casesToExport = testCases) => {
     if (!user) {
-      handleLogin();
+      exportTestCasesToCsv(casesToExport);
+      setNotification({
+        message: `File CSV scaricato con successo (${casesToExport.length} casi di test)! Puoi anche accedere con Google per creare un foglio Google Fogli live.`,
+        type: 'success',
+      });
       return;
     }
 
@@ -313,10 +368,14 @@ export default function App() {
     });
   };
 
-  // Workspace: Export Defects to Google Sheets
+  // Workspace: Export Defects to Google Sheets or direct CSV for all clients
   const handleExportBugsToSheets = async (bugsToExport = bugs) => {
     if (!user) {
-      handleLogin();
+      exportBugsToCsv(bugsToExport);
+      setNotification({
+        message: `File CSV scaricato con successo (${bugsToExport.length} difetti)! Puoi anche accedere con Google per creare un foglio Google Fogli live.`,
+        type: 'success',
+      });
       return;
     }
 
@@ -406,7 +465,15 @@ export default function App() {
   // Workspace: Sync Bug to Google Tasks
   const handleSyncBugToTasks = async (bug: Bug) => {
     if (!user) {
-      handleLogin();
+      setConfirmationConfig({
+        isOpen: true,
+        title: 'Sincronizzazione Google Tasks',
+        message: `Per sincronizzare il task "[${bug.priority}] Fix ${bug.title}" su Google Tasks è necessario accedere con il tuo account Google. Desideri accedere ora?`,
+        isDestructive: false,
+        onConfirm: async () => {
+          handleLogin();
+        },
+      });
       return;
     }
 

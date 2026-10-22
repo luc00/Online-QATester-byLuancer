@@ -16,8 +16,10 @@ import {
   Globe,
   Search,
   ShieldCheck,
+  Download,
 } from 'lucide-react';
 import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
+import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 import { DashboardWidget } from './DashboardWidget.tsx';
 
 interface DashboardViewProps {
@@ -98,6 +100,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             >
               <span>Visual & Video Bug Triage</span>
               <ArrowRight className="w-3.5 h-3.5 text-zinc-500" />
+            </button>
+
+            <button
+              onClick={() => exportTestCasesToCsv(testCases)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+              title="Scarica direttamente tutti i casi di test in formato CSV per il tuo dispositivo"
+            >
+              <Download className="w-3.5 h-3.5 text-zinc-600" />
+              <span>Scarica Casi (CSV)</span>
             </button>
 
             <button

@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { TestCase, Priority, TestCaseStatus } from '../types/qa.ts';
+import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 
 interface TestCasesViewProps {
   testCases: TestCase[];
@@ -189,13 +190,22 @@ export const TestCasesView: React.FC<TestCasesViewProps> = ({
           </button>
 
           <button
+            onClick={() => exportTestCasesToCsv(filteredCases)}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+            title="Scarica immediatamente tutti i casi di test in formato CSV (senza login richiesto)"
+          >
+            <Download className="w-3.5 h-3.5 text-zinc-600" />
+            <span>Scarica CSV</span>
+          </button>
+
+          <button
             onClick={() => onExportToSheets(filteredCases)}
             disabled={isExporting}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-zinc-50 text-emerald-700 border border-zinc-200 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer disabled:opacity-50"
-            title="Export cases to a new Google Spreadsheet"
+            title="Esporta casi in un nuovo foglio Google Fogli live"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{isExporting ? 'Exporting...' : 'Export to Sheets'}</span>
+            <span>{isExporting ? 'Exporting...' : 'Google Sheets'}</span>
           </button>
 
           <button

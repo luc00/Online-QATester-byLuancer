@@ -17,8 +17,10 @@ import {
   Sparkles,
   RefreshCw,
   X,
+  Download,
 } from 'lucide-react';
 import { Bug, BugSeverity, BugPriority, BugStatus } from '../types/qa.ts';
+import { exportBugsToCsv } from '../lib/exportUtils.ts';
 
 interface BugsViewProps {
   bugs: Bug[];
@@ -49,6 +51,7 @@ export const BugsView: React.FC<BugsViewProps> = ({
   // Suggested Severity state
   const [isAnalyzingSeverity, setIsAnalyzingSeverity] = useState(false);
   const [suggestedRationale, setSuggestedRationale] = useState<string | null>(null);
+  const [severityError, setSeverityError] = useState<string | null>(null);
 
   const [editingBug, setEditingBug] = useState<Partial<Bug>>({
     title: '',
@@ -73,12 +76,13 @@ export const BugsView: React.FC<BugsViewProps> = ({
   // Call Gemini to analyze description and suggest severity & priority
   const handleSuggestSeverity = async () => {
     if (!editingBug.description && !editingBug.title) {
-      alert('Please enter a bug title or description first so Gemini can analyze its impact.');
+      setSeverityError('Inserisci prima un titolo o una descrizione del difetto per consentire l\'analisi di gravità.');
       return;
     }
 
     setIsAnalyzingSeverity(true);
     setSuggestedRationale(null);
+    setSeverityError(null);
 
     try {
       const res = await fetch('/api/gemini/suggest-severity', {
@@ -99,11 +103,11 @@ export const BugsView: React.FC<BugsViewProps> = ({
           severity: data.severity,
           priority: data.priority || prev.priority,
         }));
-        setSuggestedRationale(data.rationale || 'Severity auto-classified based on system impact analysis.');
+        setSuggestedRationale(data.rationale || 'Severità classificata automaticamente da Gemini in base all\'impatto.');
       }
     } catch (err: any) {
       console.error('Failed to get suggested severity:', err);
-      alert(`Could not classify severity: ${err.message}`);
+      setSeverityError(`Impossibile classificare la severità: ${err.message}`);
     } finally {
       setIsAnalyzingSeverity(false);
     }
@@ -161,6 +165,15 @@ export const BugsView: React.FC<BugsViewProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => exportBugsToCsv(filteredBugs)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+            title="Scarica immediatamente tutti i difetti in formato CSV (senza login richiesto)"
+          >
+            <Download className="w-3.5 h-3.5 text-zinc-600" />
+            <span>Scarica CSV</span>
+          </button>
+
           <button
             onClick={() => onExportToSheets(filteredBugs)}
             disabled={isExporting}
@@ -492,6 +505,12 @@ export const BugsView: React.FC<BugsViewProps> = ({
                   <div className="p-2.5 bg-indigo-50/70 border border-indigo-100 rounded-lg text-[11px] text-indigo-900 leading-relaxed">
                     <strong className="font-semibold">AI Rationale: </strong>
                     {suggestedRationale}
+                  </div>
+                )}
+
+                {severityError && (
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-[11px] text-rose-800 leading-relaxed">
+                    {severityError}
                   </div>
                 )}
 
