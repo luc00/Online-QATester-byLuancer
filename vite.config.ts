@@ -5,8 +5,9 @@ import { defineConfig } from 'vite';
 import express from 'express';
 import geminiRouter from './src/server/geminiService.ts';
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
+    base: mode === 'production' ? '/Online-QATester-byLuancer/' : '/',
     plugins: [
       react(),
       tailwindcss(),
