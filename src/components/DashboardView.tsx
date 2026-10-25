@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import {
   CheckCircle2,
@@ -22,7 +27,9 @@ import {
 import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
 import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 import { DashboardWidget } from './DashboardWidget.tsx';
-import luancerLogo from '/assets/aistudio/logo_LUANCER_square.png';
+
+// Percorso relativo per compatibilità assoluta con Vite e GitHub Pages Subpath
+import luancerLogo from './assets/aistudio/logo_LUANCER_square.png';
 
 interface DashboardViewProps {
   currentProject: Project | null;
@@ -291,7 +298,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Performance Regression Trend Widget (White & Minimalist Recharts) */}
+      {/* Performance Regression Trend Widget */}
       <DashboardWidget testRuns={testRuns} />
 
       {/* Main Split: Test Runs Execution & Bug Tracker Snapshot */}
@@ -417,53 +424,4 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {bugs.slice(0, 4).map((bug) => (
               <div key={bug.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-xs font-semibold text-zinc-900 line-clamp-1">{bug.title}</span>
-                  <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
-                      bug.severity === 'critical'
-                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                        : bug.severity === 'high'
-                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                        : 'bg-blue-50 text-blue-700 border border-blue-200'
-                    }`}
-                  >
-                    {bug.severity.toUpperCase()}
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-500 mt-1 line-clamp-2">{bug.description}</p>
-                <div className="flex items-center justify-between mt-2 text-[10px] text-zinc-400">
-                  <span>Env: {bug.environment || 'QA'}</span>
-                  <span className="text-zinc-600 font-medium">{bug.priority}</span>
-                </div>
-              </div>
-            ))}
-
-            {bugs.length === 0 && (
-              <p className="text-xs text-zinc-400 py-4 text-center">No open bugs recorded.</p>
-            )}
-          </div>
-
-          {/* Quick Workspace Card */}
-          <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-2xs">
-            <h3 className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-2">
-              <ListTodo className="w-3.5 h-3.5 text-zinc-700" />
-              <span>Workspace Sync Ready</span>
-            </h3>
-            <p className="text-xs text-zinc-500 leading-relaxed">
-              Export test results to Google Sheets spreadsheets or create bug remediation action items in Google Tasks.
-            </p>
-            <div className="flex items-center gap-2 mt-3">
-              <button
-                onClick={onSyncTasks}
-                className="w-full py-1.5 px-3 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 text-xs font-medium rounded-xl border border-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <ListTodo className="w-3.5 h-3.5" />
-                <span>Sync with Google Tasks</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+                  <span className="text-xs font-semibold text-zinc-900 line-clamp-1">{bug
