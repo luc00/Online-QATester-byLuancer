@@ -24,8 +24,8 @@ import {
 } from 'lucide-react';
 import { Project } from '../types/qa.ts';
 
-// Percorso relativo per compatibilità assoluta con Vite e GitHub Pages Subpath
-import luancerLogo from './assets/aistudio/logo_LUANCER_square.png';
+// Percorso corretto uscire da components e puntare a public/assets
+import luancerLogo from '../../public/assets/aistudio/logo_LUANCER_square.png';
 
 interface NavbarProps {
   activeTab: string;
@@ -187,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Tab Navigation - Minimalist Clean Pills */}
+        {/* Tab Navigation */}
         <nav className="flex items-center space-x-1 overflow-x-auto py-2 scrollbar-none border-t border-zinc-150">
           {navItems.map((item) => {
             const Icon = item.icon;
