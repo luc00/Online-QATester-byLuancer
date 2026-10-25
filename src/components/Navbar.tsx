@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import { User } from 'firebase/auth';
 import {
@@ -18,7 +23,9 @@ import {
   Globe,
 } from 'lucide-react';
 import { Project } from '../types/qa.ts';
-import luancerLogo from '/assets/aistudio/logo_LUANCER_square.png';
+
+// Percorso relativo per compatibilità assoluta con Vite e GitHub Pages Subpath
+import luancerLogo from './assets/aistudio/logo_LUANCER_square.png';
 
 interface NavbarProps {
   activeTab: string;
