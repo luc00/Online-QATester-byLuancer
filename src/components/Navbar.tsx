@@ -23,6 +23,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { Project } from '../types/qa.ts';
+import luancerLogo from './logo_LUANCER_square.png';
 
 interface NavbarProps {
   activeTab: string;
@@ -109,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Stai riscontrando problemi nel sito? Passa da me, te lo risolvo subito!"
             >
               <img
-                src="/Online-QATester-byLuancer/assets/aistudio/logo_LUANCER_square.png"
+                src={luancerLogo}
                 alt="Logo Luancer"
                 className="w-4 h-4 rounded-sm object-cover shrink-0"
               />
