@@ -28,8 +28,8 @@ import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
 import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 import { DashboardWidget } from './DashboardWidget.tsx';
 
-// Percorso relativo per compatibilità assoluta con Vite e GitHub Pages Subpath
-import luancerLogo from './assets/aistudio/logo_LUANCER_square.png';
+// Percorso corretto uscire da components e puntare a public/assets
+import luancerLogo from '../../public/assets/aistudio/logo_LUANCER_square.png';
 
 interface DashboardViewProps {
   currentProject: Project | null;
@@ -164,7 +164,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 5-Pillars QA Card: Bug, Violazioni, Cose Mancanti, Consigli, Previsione Problemi */}
+      {/* 5-Pillars QA Card */}
       <div className="bg-white border-2 border-zinc-200 rounded-3xl p-6 shadow-xs relative overflow-hidden transition-all hover:border-zinc-300">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-1.5 max-w-2xl">
@@ -215,9 +215,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Metrics Row - White Cards */}
+      {/* Metrics Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Test Cases */}
         <div className="bg-white border border-zinc-200 p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-zinc-500">Total Test Cases</span>
@@ -235,7 +234,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Active Test Runs */}
         <div className="bg-white border border-zinc-200 p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-zinc-500">Active Test Runs</span>
@@ -255,7 +253,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Open Defects */}
         <div className="bg-white border border-zinc-200 p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-zinc-500">Open Defects</span>
@@ -275,7 +272,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Quality Score */}
         <div className="bg-white border border-zinc-200 p-5 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-zinc-500">Pass Rate Health</span>
@@ -298,12 +294,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Performance Regression Trend Widget */}
       <DashboardWidget testRuns={testRuns} />
 
-      {/* Main Split: Test Runs Execution & Bug Tracker Snapshot */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Test Runs Column (2 cols) */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -371,7 +364,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     </button>
                   </div>
 
-                  {/* Progress Stack Bar */}
                   <div className="mt-4">
                     <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden flex">
                       <div style={{ width: `${passPct}%` }} className="bg-emerald-500 h-full" />
@@ -404,7 +396,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        {/* Defect Triage & Action Items (1 col) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -424,4 +415,52 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             {bugs.slice(0, 4).map((bug) => (
               <div key={bug.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-xs font-semibold text-zinc-900 line-clamp-1">{bug
+                  <span className="text-xs font-semibold text-zinc-900 line-clamp-1">{bug.title}</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                      bug.severity === 'critical'
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : bug.severity === 'high'
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                        : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    }`}
+                  >
+                    {bug.severity.toUpperCase()}
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-500 mt-1 line-clamp-2">{bug.description}</p>
+                <div className="flex items-center justify-between mt-2 text-[10px] text-zinc-400">
+                  <span>Env: {bug.environment || 'QA'}</span>
+                  <span className="text-zinc-600 font-medium">{bug.priority}</span>
+                </div>
+              </div>
+            ))}
+
+            {bugs.length === 0 && (
+              <p className="text-xs text-zinc-400 py-4 text-center">No open bugs recorded.</p>
+            )}
+          </div>
+
+          <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-2xs">
+            <h3 className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-2">
+              <ListTodo className="w-3.5 h-3.5 text-zinc-700" />
+              <span>Workspace Sync Ready</span>
+            </h3>
+            <p className="text-xs text-zinc-500 leading-relaxed">
+              Export test results to Google Sheets spreadsheets or create bug remediation action items in Google Tasks.
+            </p>
+            <div className="flex items-center gap-2 mt-3">
+              <button
+                onClick={onSyncTasks}
+                className="w-full py-1.5 px-3 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 text-xs font-medium rounded-xl border border-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <ListTodo className="w-3.5 h-3.5" />
+                <span>Sync with Google Tasks</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
