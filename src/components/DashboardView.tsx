@@ -28,9 +28,6 @@ import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
 import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 import { DashboardWidget } from './DashboardWidget.tsx';
 
-// Percorso corretto uscire da components e puntare a public/assets
-import luancerLogo from '../../public/assets/aistudio/logo_LUANCER_square.png';
-
 interface DashboardViewProps {
   currentProject: Project | null;
   testCases: TestCase[];
@@ -71,7 +68,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-3.5">
           <div className="relative w-11 h-11 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0 flex items-center justify-center">
             <img
-              src={luancerLogo}
+              src={`${import.meta.env.BASE_URL}assets/aistudio/logo_LUANCER_square.png`}
               alt="LUANCER & CO."
               className="w-full h-full object-cover"
             />
@@ -309,158 +306,3 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             >
               <span>View All Cases</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {testRuns.map((run) => {
-              const passPct = run.total > 0 ? (run.passed / run.total) * 100 : 0;
-              const failPct = run.total > 0 ? (run.failed / run.total) * 100 : 0;
-              const blockedPct = run.total > 0 ? (run.blocked / run.total) * 100 : 0;
-
-              return (
-                <div
-                  key={run.id}
-                  className="bg-white border border-zinc-200 rounded-2xl p-5 hover:border-zinc-300 transition-colors shadow-2xs"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2.5">
-                        <span className="font-bold text-zinc-900 text-sm">{run.title}</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 text-zinc-700 border border-zinc-200">
-                          {run.environment}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                            run.status === 'in_progress'
-                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          }`}
-                        >
-                          {run.status === 'in_progress' ? 'RUNNING' : 'COMPLETED'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-1 flex flex-wrap items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-zinc-400" />
-                          Updated {new Date(run.updatedAt).toLocaleDateString()}
-                        </span>
-                        {run.formattedDuration && (
-                          <span className="flex items-center gap-1 text-zinc-700 font-mono font-medium bg-zinc-100 px-1.5 py-0.5 rounded border border-zinc-200">
-                            <Timer className="w-3 h-3 text-zinc-600" />
-                            {run.formattedDuration}
-                          </span>
-                        )}
-                        <span>Runner: {run.executedBy || 'Manual QA'}</span>
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => onOpenTestRun(run)}
-                      className="px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
-                    >
-                      <Play className="w-3 h-3 fill-current" />
-                      <span>Execute</span>
-                    </button>
-                  </div>
-
-                  <div className="mt-4">
-                    <div className="h-2 w-full bg-zinc-100 rounded-full overflow-hidden flex">
-                      <div style={{ width: `${passPct}%` }} className="bg-emerald-500 h-full" />
-                      <div style={{ width: `${failPct}%` }} className="bg-rose-500 h-full" />
-                      <div style={{ width: `${blockedPct}%` }} className="bg-amber-500 h-full" />
-                    </div>
-                    <div className="flex items-center justify-between text-xs mt-2 text-zinc-500">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1 text-emerald-700 font-medium">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                          {run.passed} Passed
-                        </span>
-                        <span className="flex items-center gap-1 text-rose-700 font-medium">
-                          <span className="w-2 h-2 rounded-full bg-rose-500" />
-                          {run.failed} Failed
-                        </span>
-                        {run.blocked > 0 && (
-                          <span className="flex items-center gap-1 text-amber-700 font-medium">
-                            <span className="w-2 h-2 rounded-full bg-amber-500" />
-                            {run.blocked} Blocked
-                          </span>
-                        )}
-                      </div>
-                      <span>{run.total} Total</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bug className="w-4 h-4 text-zinc-800" />
-              <h2 className="text-base font-bold text-zinc-900">Active Defects & Bugs</h2>
-            </div>
-            <button
-              onClick={() => onNavigateTab('bugs')}
-              className="text-xs text-zinc-600 hover:text-zinc-900 font-semibold flex items-center gap-1 cursor-pointer"
-            >
-              <span>Manage</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="bg-white border border-zinc-200 rounded-2xl p-4 divide-y divide-zinc-100 shadow-2xs">
-            {bugs.slice(0, 4).map((bug) => (
-              <div key={bug.id} className="py-3 first:pt-0 last:pb-0">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-xs font-semibold text-zinc-900 line-clamp-1">{bug.title}</span>
-                  <span
-                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
-                      bug.severity === 'critical'
-                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                        : bug.severity === 'high'
-                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                        : 'bg-blue-50 text-blue-700 border border-blue-200'
-                    }`}
-                  >
-                    {bug.severity.toUpperCase()}
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-500 mt-1 line-clamp-2">{bug.description}</p>
-                <div className="flex items-center justify-between mt-2 text-[10px] text-zinc-400">
-                  <span>Env: {bug.environment || 'QA'}</span>
-                  <span className="text-zinc-600 font-medium">{bug.priority}</span>
-                </div>
-              </div>
-            ))}
-
-            {bugs.length === 0 && (
-              <p className="text-xs text-zinc-400 py-4 text-center">No open bugs recorded.</p>
-            )}
-          </div>
-
-          <div className="bg-white border border-zinc-200 rounded-2xl p-4 shadow-2xs">
-            <h3 className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 mb-2">
-              <ListTodo className="w-3.5 h-3.5 text-zinc-700" />
-              <span>Workspace Sync Ready</span>
-            </h3>
-            <p className="text-xs text-zinc-500 leading-relaxed">
-              Export test results to Google Sheets spreadsheets or create bug remediation action items in Google Tasks.
-            </p>
-            <div className="flex items-center gap-2 mt-3">
-              <button
-                onClick={onSyncTasks}
-                className="w-full py-1.5 px-3 bg-zinc-50 hover:bg-zinc-100 text-zinc-800 text-xs font-medium rounded-xl border border-zinc-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <ListTodo className="w-3.5 h-3.5" />
-                <span>Sync with Google Tasks</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
