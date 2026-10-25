@@ -27,6 +27,7 @@ import {
 import { Project, TestCase, TestRun, Bug as BugType } from '../types/qa.ts';
 import { exportTestCasesToCsv } from '../lib/exportUtils.ts';
 import { DashboardWidget } from './DashboardWidget.tsx';
+import luancerLogo from './logo_LUANCER_square.png';
 
 interface DashboardViewProps {
   currentProject: Project | null;
@@ -68,7 +69,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-3.5">
           <div className="relative w-11 h-11 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0 flex items-center justify-center">
             <img
-              src="/Online-QATester-byLuancer/assets/aistudio/logo_LUANCER_square.png"
+              src={luancerLogo}
               alt="LUANCER & CO."
               className="w-full h-full object-cover"
             />
