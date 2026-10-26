@@ -40,6 +40,7 @@ import {
   Bug,
   TestCase,
 } from '../types/qa.ts';
+import luancerLogo from './logo_LUANCER_square.png';
 
 interface WebsiteAuditorViewProps {
   onFileBug: (bug: Partial<Bug>) => void;
@@ -1119,7 +1120,7 @@ export const WebsiteAuditorView: React.FC<WebsiteAuditorViewProps> = ({
             >
               <div className="w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center shrink-0 bg-[#e0f1e6]">
                 <img
-                  src="/assets/aistudio/logo_LUANCER_square.png"
+                  src={luancerLogo}
                   alt="Logo Luancer"
                   className="w-full h-full object-cover"
                 />

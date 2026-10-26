@@ -48,6 +48,7 @@ import { CopilotChatView } from './components/CopilotChatView.tsx';
 import { GoogleTasksView } from './components/GoogleTasksView.tsx';
 import { TestRunModal } from './components/TestRunModal.tsx';
 import { WebsiteAuditorView } from './components/WebsiteAuditorView.tsx';
+import luancerLogo from './components/logo_LUANCER_square.png';
 import { ExternalLink, CheckCircle2, AlertCircle, X, Wrench, Sparkles, ArrowRight } from 'lucide-react';
 
 const STORAGE_KEYS = {
@@ -609,7 +610,7 @@ export default function App() {
               >
                 <div className="w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform bg-[#e0f1e6]">
                   <img
-                    src="/assets/aistudio/logo_LUANCER_square.png"
+                    src={luancerLogo}
                     alt="Luancer and Co. Logo"
                     className="w-full h-full object-cover"
                   />
@@ -810,7 +811,7 @@ export default function App() {
               className="font-bold text-zinc-900 hover:text-black underline underline-offset-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 transition-colors"
             >
               <img
-                src="/assets/aistudio/logo_LUANCER_square.png"
+                src={luancerLogo}
                 alt="Logo Luancer"
                 className="w-4 h-4 rounded-sm object-cover shrink-0"
               />
